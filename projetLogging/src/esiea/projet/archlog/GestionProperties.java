@@ -13,7 +13,9 @@ public class GestionProperties {
 		this.properties = new Properties();
 		try {
 			properties.load(new FileInputStream("config.properties"));
-		} catch (IOException e) { }
+		} catch (IOException e) {
+			System.err.println("Erreur de chargement du fichier properties.");
+		}
 	}
 
 	public Properties getProperties() 

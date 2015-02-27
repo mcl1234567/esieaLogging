@@ -21,10 +21,12 @@ public class FormateurShowFormat extends FormateurFactory {
         try {
         	DateFormat date = new SimpleDateFormat(dateTimeFormat);
             dateStr = date.format(new Date()); 
-        } catch (final IllegalArgumentException e) { }
+        } catch (final IllegalArgumentException e) {
+        	System.err.println("Date invalide");
+        }
 
         // Retourne le message log formaté.
-        return dateStr + " [PACKAGE = " + namePackages_ + " PRIORITE = " + level_ + " FORMATEUR = " 
-                + this.getClass().getName() + " MESSAGE = " + msg_ + " ]";
+        return dateStr + " [PACKAGE=" + namePackages_ + " PRIORITE=" + level_ + " FORMATEUR=" 
+                + this.getClass().getName() + " MESSAGE=" + msg_ + "]";
 	}
 }

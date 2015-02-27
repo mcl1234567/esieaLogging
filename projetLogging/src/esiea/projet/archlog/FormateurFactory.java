@@ -20,7 +20,9 @@ public class FormateurFactory {
         try {
         	DateFormat date = new SimpleDateFormat(dateTimeFormat);
             dateStr = date.format(new Date()); 
-        } catch (final IllegalArgumentException e) { }
+        } catch (final IllegalArgumentException e) { 
+        	System.err.println("Date invalide");
+        }
 
         // Retourne le message log formaté.
         return dateStr + " [NAME=" + namePackages_ + " LEVEL=" + level_ + " MESSAGE= " + msg_ + "]";

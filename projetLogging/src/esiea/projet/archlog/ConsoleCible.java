@@ -1,9 +1,6 @@
 package esiea.projet.archlog;
 
 public class ConsoleCible extends CibleFactory {
-	
-	ConsoleCible() {
-	}
 
 	@Override
 	public String getPathFile() 

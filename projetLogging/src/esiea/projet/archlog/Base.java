@@ -11,8 +11,8 @@ public class Base {
 		logger.info("bbbbb toudou");
 		logger.error("cccccccc tudu");
 		
-		// Configuration des logs via le fichier properties_config.txt
+		// Configuration des logs via le fichier config.properties
 		logger.loadProperties();
-		logger.showMessage("Level redéfini");
+		logger.showMessage("Priorité redéfinie");
 	}
 }

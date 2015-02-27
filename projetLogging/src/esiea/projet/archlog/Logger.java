@@ -1,7 +1,6 @@
 package esiea.projet.archlog;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Set;
 
 
 public class Logger {
@@ -39,8 +38,10 @@ public class Logger {
     {
     	GestionProperties gp = new GestionProperties();
     	Properties properties = gp.getProperties();
+    	
+    	String nomCible = null;
 
-    	System.out.println("\nChargement du fichier config.properties...\n");
+    	System.out.println("\n------------------\nChargement du fichier config.properties...\n");
     	for(String key : properties.stringPropertyNames()) {
 			String value = properties.getProperty(key);			
 			System.out.println(key + " => " + value);
@@ -53,14 +54,42 @@ public class Logger {
 					// packages + classe
 					//setClasseAppelante(key.substring(6, longueur-6));
 				}
-				if (key.substring(longueur-8, longueur).equalsIgnoreCase("formater")) {
-					//setFormateurViaString(value);
+				if (key.substring(longueur-8, longueur).equalsIgnoreCase("formater")
+				|| key.substring(longueur-9, longueur).equalsIgnoreCase("formateur")) {
+					convertFormateur(value);
 					// packages + classe
 					//setClasseAppelante(key.substring(6, longueur-6));
 				}
+
+				// Cible quelconque
+				if (key.substring(longueur-5, longueur).equalsIgnoreCase("cible")
+				|| key.substring(longueur-6, longueur-1).equalsIgnoreCase("cible")) {
+					convertCible(value);
+					// packages + classe
+					//setClasseAppelante(key.substring(6, longueur-6));
+				}
+
+				// Fichier cible, ajout en deux temps. Stockage du nom de la classe / ou + package
+				if (
+				(key.substring(longueur-5, longueur).equalsIgnoreCase("cible")
+					|| key.substring(longueur-6, longueur-1).equalsIgnoreCase("cible") )
+				&& ( value.equalsIgnoreCase("FileCible") 
+					|| value.equalsIgnoreCase("esiea.projet.archlog.FileCible") )
+				) {
+					nomCible = value;					
+				}
+
+				// Fichier cible, ajout en deux temps. 
+				// Création de l'objet cible avec ajp=out du chemin
+				// Ajout à la liste des cibles.
+				if (key.substring(longueur-4, longueur).equalsIgnoreCase("path") 
+				&& nomCible.equalsIgnoreCase(key.substring(longueur-5-nomCible.length(), longueur-5))) {
+					convertCible(nomCible, value);
+					nomCible = null;	// reset
+				}
 			}
 		}
-    	System.out.println("");
+    	System.out.println("----------------------\n"); // saut de ligne
     }
     
     /**
@@ -87,7 +116,7 @@ public class Logger {
     }
     
     /**
-     * Configure le formateur des messages log via le nom de la classe du formateur a utilisé.
+     * Configure le formateur des messages log avec le nom de la classe du formateur.
      * @param formateur_
      */
     public void setFormateur(FormateurFactory formateur_) 
@@ -95,9 +124,62 @@ public class Logger {
     	this.formateurUnique = formateur_;
     }
    
-    public void setFormateur(String formateur_)  
+    /**
+     * Création objet du formateur depuis le fichier properties.
+     * @param formateur_
+     */
+    public void convertFormateur(String formateur_)  
     {
-    	// TO DO
+    	try {
+    		// Récupère le nom d'une classe avec un string.
+    		FormateurFactory ff = (FormateurFactory) Class.forName(formateur_).newInstance();
+    		setFormateur( ff );
+    	} catch(ClassNotFoundException e) {
+    		System.err.println("La classe " + formateur_ + " n'existe pas.");
+    	} catch (IllegalAccessException e) {
+    		System.err.println("La classe " + formateur_ + " ne peut pas être instanciée.");
+    	} catch (InstantiationException e2) {
+    		System.err.println("La classe " + formateur_ + " ne peut pas être instanciée.");
+		}
+    }
+   
+    /**
+     * Création objet d'une cible depuis le fichier properties.
+     * @param cible
+     */
+    public void convertCible(String cible_)  
+    {
+    	try {
+    		// Récupère le nom d'une classe avec un string.
+    		CibleFactory cf = (CibleFactory) Class.forName(cible_).newInstance();
+    		addCible( cf );
+    	} catch(ClassNotFoundException e) {
+    		System.err.println("La classe " + cible_ + " n'existe pas.");
+    	} catch (IllegalAccessException e) {
+    		System.err.println("La classe " + cible_ + " ne peut pas être instanciée.");
+    	} catch (InstantiationException e2) {
+    		System.err.println("La classe " + cible_ + " ne peut pas être instanciée.");
+		}
+    }
+   
+    /**
+     * Création objet d'une cible depuis le fichier properties.
+     * @param cible
+     */
+    public void convertCible(String cible_, String path_)  
+    {
+    	try {
+    		// Récupère le nom d'une classe avec un string.
+    		CibleFactory cf = (CibleFactory) Class.forName(cible_).newInstance();
+    		cf.setPathFile(path_);
+    		addCible( cf );
+    	} catch(ClassNotFoundException e) {
+    		System.err.println("La classe " + cible_ + " n'existe pas.");
+    	} catch (IllegalAccessException e) {
+    		System.err.println("La classe " + cible_ + " ne peut pas être instanciée.");
+    	} catch (InstantiationException e2) {
+    		System.err.println("La classe " + cible_ + " ne peut pas être instanciée.");
+		}
     }
 
     /**
@@ -162,7 +244,7 @@ public class Logger {
      */
     private void log(final String msg_, String level_) 
     {
-    	// Formatage du message log via un formateur. 
+    	// Formatage du message de log via un formateur. 
         String logMessage = this.formateurUnique.getLayout(this.classeUnique.getPackage().getName(), level_, msg_);
 
         // Envoie du log vers les cibles
