@@ -8,6 +8,7 @@ public class FileCible extends CibleFactory {
 
 	FileCible() 
 	{
+		// Constructeur appelé par newInstance()
 	}
 
 	FileCible(final String path_) 

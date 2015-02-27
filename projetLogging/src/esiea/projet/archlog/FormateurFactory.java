@@ -7,6 +7,7 @@ import java.util.Date;
 public class FormateurFactory {
 	/**
 	 * Formatage d'un message log.
+	 * 
 	 * @param namePackages_
 	 * @param level_
 	 * @param msg_

@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class CibleFactory implements Cible {
-	public String path;
+	private String path;
 
 	public CibleFactory() 
 	{
@@ -16,19 +16,9 @@ public class CibleFactory implements Cible {
 		this.path = path_;
 	}
 
-	public String getPathFile() 
-	{
-		return this.path;
-	}
-
 	public void launch(final String msg_) 
 	{
 		System.out.println(msg_);
-	}
-
-	public void setPathFile(String path_) 
-	{
-		this.path = path_;
 	}
 
     /**
@@ -50,7 +40,16 @@ public class CibleFactory implements Cible {
     		if(writer != null) {
     			writer.close();
     		}
-    	}    	
+    	}
     }
 
+	public void setPathFile(String path_) 
+	{
+		this.path = path_;
+	}
+
+	public String getPathFile() 
+	{
+		return this.path;
+	}
 }

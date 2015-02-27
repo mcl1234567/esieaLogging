@@ -6,8 +6,6 @@ import java.util.Properties;
 public class Logger {
 	private Class<?> classeUnique;
 	private FormateurFactory formateurUnique;
-	private String levelUnique;
-
 	private ArrayList<CibleFactory> cibles = new ArrayList<CibleFactory>();
 	private String[] levels = {"", "DEBUG", "INFO", "ERROR"};
 	private int LEVEL_UNIQUE = 0;
