@@ -37,7 +37,8 @@ public class Logger {
     {
     	GestionProperties gp = new GestionProperties();
     	Properties properties = gp.getProperties();
-    	
+
+    	String keyId = null;
     	String nomCible = null;
 
     	System.out.println("\n------------------\nChargement du fichier config.properties...\n");
@@ -50,22 +51,16 @@ public class Logger {
 				int longueur = key.length();
 				if (key.substring(longueur-5, longueur).equalsIgnoreCase("level")) {
 					setLevel(value);
-					// packages + classe
-					//setClasseAppelante(key.substring(6, longueur-6));
 				}
 				if (key.substring(longueur-8, longueur).equalsIgnoreCase("formater")
 				|| key.substring(longueur-9, longueur).equalsIgnoreCase("formateur")) {
 					convertFormateur(value);
-					// packages + classe
-					//setClasseAppelante(key.substring(6, longueur-6));
 				}
 
 				// Cible quelconque
 				if (key.substring(longueur-5, longueur).equalsIgnoreCase("cible")
 				|| key.substring(longueur-6, longueur-1).equalsIgnoreCase("cible")) {
 					convertCible(value);
-					// packages + classe
-					//setClasseAppelante(key.substring(6, longueur-6));
 				}
 
 				// Fichier cible, ajout en deux temps. Stockage du nom de la classe / ou + package
@@ -75,14 +70,18 @@ public class Logger {
 				&& ( value.equalsIgnoreCase("FileCible") 
 					|| value.equalsIgnoreCase("esiea.projet.archlog.FileCible") )
 				) {
-					nomCible = value;					
+					// Récupère la dernière information des clés
+					keyId = key.substring(key.lastIndexOf('.') + 1, longueur);
+					
+					// Récupère la dernière information des valeurs
+					nomCible = value;//.substring(value.lastIndexOf('.') + 1, value.length());
 				}
 
 				// Fichier cible, ajout en deux temps. 
 				// Création de l'objet cible avec ajp=out du chemin
 				// Ajout à la liste des cibles.
 				if (key.substring(longueur-4, longueur).equalsIgnoreCase("path") 
-				&& nomCible.equalsIgnoreCase(key.substring(longueur-5-nomCible.length(), longueur-5))) {
+				&& keyId.equalsIgnoreCase(key.substring(key.lastIndexOf('.', key.length()-10)+1, longueur-5))) {					
 					convertCible(nomCible, value);
 					nomCible = null;	// reset
 				}
@@ -105,11 +104,11 @@ public class Logger {
     		// Vérification de l'unicté de la liste de cibles.
     		if(String.valueOf(cible_.getClass()).equalsIgnoreCase(String.valueOf(cibles.get(i).getClass()))) {
         		// Cible déjà enregistrée.
-    			dejaCible = true;    			
+    			dejaCible = true;
     		}
 		}
 		// Si pas encore ciblé, alors on ajoute à la liste des cibles.
-		if(!dejaCible) {    			
+		if(!dejaCible) {
 			cibles.add(cible_);
 		}
     }
@@ -151,7 +150,7 @@ public class Logger {
     	try {
     		// Récupère le nom d'une classe avec un string.
     		CibleFactory cf = (CibleFactory) Class.forName(cible_).newInstance();
-    		addCible( cf );
+    		addCible(cf);
     	} catch(ClassNotFoundException e) {
     		System.err.println("La classe " + cible_ + " n'existe pas.");
     	} catch (IllegalAccessException e) {
@@ -171,7 +170,7 @@ public class Logger {
     		// Récupère le nom d'une classe avec un string.
     		CibleFactory cf = (CibleFactory) Class.forName(cible_).newInstance();
     		cf.setPathFile(path_);
-    		addCible( cf );
+    		addCible(cf);
     	} catch(ClassNotFoundException e) {
     		System.err.println("La classe " + cible_ + " n'existe pas.");
     	} catch (IllegalAccessException e) {
@@ -270,6 +269,7 @@ public class Logger {
 
         // Envoie du log vers les cibles
        	for (int i = 0; i < this.cibles.size(); i++) {
+       		
        		this.cibles.get(i).launch(logMessage);
 		}
     }
