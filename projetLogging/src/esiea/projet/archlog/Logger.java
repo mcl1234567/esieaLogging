@@ -6,6 +6,7 @@ import java.util.Properties;
 public class Logger {
 	private Class<?> classeUnique;
 	private FormateurFactory formateurUnique;
+	private String levelUnique = null;
 	private ArrayList<CibleFactory> cibles = new ArrayList<CibleFactory>();
 	private String[] levels = {"", "DEBUG", "INFO", "ERROR"};
 	private int LEVEL_UNIQUE = 0;
@@ -195,7 +196,11 @@ public class Logger {
      */
     public void showMessage(final String msg_) 
     {
-    	log(msg_, levels[LEVEL_UNIQUE]);
+    	if(LEVEL_UNIQUE == 4 ) {
+    		log(msg_, levelUnique);
+    	} else {
+    		log(msg_, levels[LEVEL_UNIQUE]);
+    	}
     }
     
     /**
@@ -204,15 +209,24 @@ public class Logger {
      */
     public void setLevel(String level_) 
     {
+    	boolean otherLevel = true;
     	if (level_.toLowerCase().equalsIgnoreCase("debug") || level_.toUpperCase().equalsIgnoreCase("debug")) {			
 			LEVEL_UNIQUE = 1;
+			otherLevel = false;
 		}
     	if (level_.toLowerCase().equalsIgnoreCase("info") || level_.toUpperCase().equalsIgnoreCase("info")) {			
 			LEVEL_UNIQUE = 2;
+			otherLevel = false;
 		}
     	if (level_.toLowerCase().equalsIgnoreCase("error") || level_.toUpperCase().equalsIgnoreCase("error")) {			
 			LEVEL_UNIQUE = 3;
-		}    	
+			otherLevel = false;
+		}
+    	// Ajout d'un autre level.
+    	if(otherLevel) {
+    		LEVEL_UNIQUE = 4;
+    		levelUnique = level_;
+    	}
     }
     
     /**
@@ -223,16 +237,25 @@ public class Logger {
     public void setLevel(Class<?> classe_, String level_) 
     {
     	setClasseAppelante(classe_);
+    	boolean otherLevel = true;
 
     	if (level_.toLowerCase().equalsIgnoreCase("debug") || level_.toUpperCase().equalsIgnoreCase("debug")) {			
 			LEVEL_UNIQUE = 1;
+			otherLevel = false;
 		}
     	if (level_.toLowerCase().equalsIgnoreCase("info") || level_.toUpperCase().equalsIgnoreCase("info")) {			
 			LEVEL_UNIQUE = 2;
+			otherLevel = false;
 		}
     	if (level_.toLowerCase().equalsIgnoreCase("error") || level_.toUpperCase().equalsIgnoreCase("error")) {			
 			LEVEL_UNIQUE = 3;
+			otherLevel = false;
 		}
+    	// Ajout d'un autre level.
+    	if(otherLevel) {
+    		LEVEL_UNIQUE = 4;
+    		levelUnique = level_;
+    	}
     }
 
     /**

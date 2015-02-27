@@ -14,5 +14,8 @@ public class Base {
 		// Configuration des logs via le fichier config.properties
 		logger.loadProperties();
 		logger.showMessage("Priorité redéfinie");
+		
+		logger.setLevel("WARN");
+		logger.showMessage("Priorité redéfinie : WARN");
 	}
 }
